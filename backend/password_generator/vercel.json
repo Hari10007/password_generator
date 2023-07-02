@@ -3,9 +3,9 @@
     "version": 2,
     "builds": [
       {
-        "src": "password/wsgi.py",
+        "src": "password_generator/wsgi.py",
         "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "Python 3.10.6" }
+        "config": { "maxLambdaSize": "15mb", "runtime": "python3.10.6" }
       },
       {
         "src": "build_files.sh",
@@ -22,7 +22,7 @@
       },
       {
         "src": "/(.*)",
-        "dest": "password/wsgi.py"
+        "dest": "password_generator/wsgi.py"
       }
     ]
   }
