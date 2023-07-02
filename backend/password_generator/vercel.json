@@ -5,7 +5,7 @@
       {
         "src": "password/wsgi.py",
         "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python" }
+        "config": { "maxLambdaSize": "15mb", "runtime": "Python 3.10.6" }
       },
       {
         "src": "build_files.sh",
