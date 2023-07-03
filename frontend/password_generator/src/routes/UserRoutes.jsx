@@ -8,6 +8,7 @@ import ProtectedRoute from './ProtectedRoute'
 import LoginPage from '../pages/login/LoginPage'
 import PasswordGeneratorPage from '../pages/home/PasswordGeneratorPage'
 import NoMatchPage from '../pages/error_pages/NoMatchPage'
+import SignUpPage from '../pages/sign_up/SignUpPage'
 
 
 function LoginRoute() {
@@ -16,7 +17,9 @@ function LoginRoute() {
     if (user) {
       return <Navigate to="/password_generator" />;
     } else {
-      return <LoginPage />;
+      return (
+          <LoginPage />
+      );
     }
   }
   
@@ -28,6 +31,7 @@ function UserRoutes() {
             <Route path="/" exact element={<Navigate to="/login" replace />} />
 
             <Route path="/login" exact element={<LoginRoute />} />
+            <Route path="/sign_up" exact element={<SignUpPage />} />
             <Route element={<ProtectedRoute  logoutPath="/login"/>}>
               <Route path="/" element={<Outlet />}>
                   <Route path="password_generator" element={<PasswordGeneratorPage />} />

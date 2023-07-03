@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-s!v%)8a+2r!6&8a5u0opr)b_#augqx^4*)kc%)28m8k!p*ky(i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app', '.now.sh']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'user'
+    'user',
+    'password',
 ]
 
 MIDDLEWARE = [
@@ -95,24 +96,24 @@ SIMPLE_JWT = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'mysql-134031-0.cloudclusters.net',
-        'NAME': 'password',
-        'USER': 'admin',
-        'PASSWORD': 'B2qWKx3E',
-        'PORT': '10067',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'HOST': 'mysql-134031-0.cloudclusters.net',
+#         'NAME': 'password',
+#         'USER': 'admin',
+#         'PASSWORD': 'B2qWKx3E',
+#         'PORT': '10067',
+#     }
+# }
 
 
 # Password validation
@@ -135,8 +136,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 if DEBUG:
     CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
-else:
-    CSRF_TRUSTED_ORIGINS = ['https://apexinnovation.netlify.app']
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

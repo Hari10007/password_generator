@@ -33,10 +33,20 @@ class RefreshTokenView(APIView):
 
 class RegisterView(APIView):
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+
+        email = request.data.get('email')
+        if User.objects.filter(email=email).exists():
+            return Response({'error': 'Email is already in use', 'status': 'danger'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            serializer = UserSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except serializers.ValidationError as e:
+            return Response({'error': str(e), 'status': 'danger'}, status=status.HTTP_400_BAD_REQUEST)
+        except APIException as e:
+            return Response({'error': str(e.detail), 'status': 'danger'}, status=e.status_code)
 
 
 class LoginView(APIView):

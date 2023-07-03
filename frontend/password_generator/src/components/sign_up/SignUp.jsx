@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -9,63 +8,68 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
-import jwt from 'jwt-decode'
-import {useDispatch} from 'react-redux'
-import Cookies from 'js-cookie';
+import { Link, useNavigate } from 'react-router-dom';
+import useAxios from '../../utilis/useAxios';
+import { FormHelperText } from '@mui/material';
 import { baseURL } from '../../utilis/baseUrl';
-import { login } from '../../redux-toolkit/userSlice';
 
-const initialValues = {
-  email: '',
-  password: '',
-}
+
+
 
 const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
+    password: Yup.lazy((value) =>
+        value ? Yup.string().required('Password is required') : Yup.string()
+    ),
+    confirm_password: Yup.lazy((value) =>
+        value ? Yup.string().required('Confirm Password is required')
+          .oneOf([Yup.ref('password'), null], 'Passwords must match') : Yup.string()
+    )
   });
 
-function Login() {
+function SignUp() {
     const  [showPassword, setShowPassword] = useState(false)
-    const [message, setMessage] = useState('');
-    const dispatch = useDispatch('')
+    const  [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const api = useAxios();
+    const navigate = useNavigate();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
+
+    const handleClickShowConfirmPassword = () => {
+      setShowConfirmPassword(!showConfirmPassword);
+  };
     
     const formik = useFormik({
-        initialValues,
-        validationSchema,
-        onSubmit: async(values) => {
-            const response =  await fetch(`${baseURL}/login`,  {
-              method: 'POST',
-              credentials: 'include',
-              headers: {'Content-Type': 'application/json'},
-              body: JSON.stringify({
-                  'email': values.email,
-                  'password': values.password
-              })
-          });
-    
-          const content = await response.json();
-          console.log(content)
-          if (response.status === 200){
-            const decode_token = jwt(content.access)
-    
-            const ACCESS_TOKEN_LIFETIME = 1; // hour
-            const accessTokenExpires = new Date(Date.now() + ACCESS_TOKEN_LIFETIME * 60 * 60 * 1000);
-    
-            Cookies.set('access_token', content.access, { expires: accessTokenExpires});
-            Cookies.set('refresh_token', content.refresh, { expires: 90});
-    
-            dispatch(login(decode_token));
-          }
-          else{
-            setMessage(content.detail)
-          }
+        initialValues: {
+            email: '',
+            password: '',
+            confirm_password: '',
         },
+        validationSchema: validationSchema,
+        onSubmit: async (values) => {
+          try {
+              const formData = new FormData();
+              formData.append('email', values.email);
+              formData.append('password', values.password);
+              formData.append('password2', values.confirm_password);
+              
+
+              const response = await fetch(`${baseURL}/register`, {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+              });
+
+              if (response.status === 201) {
+                  navigate('/login');
+              }
+          } 
+          catch (error) {
+              console.log(error.response.data.error)
+          }
+      }
     });
 
   return (
@@ -82,7 +86,7 @@ function Login() {
           <div className="col-md-8 col-lg-8 col-xl-4 offset-xl-1">
             <form onSubmit={formik.handleSubmit}>
               <div className="d-flex flex-row align-items-center justify-content-center justify-content-lg-center">
-                <h2 className="lead fw-normal mb-0 me-3">Log In</h2>
+                <h2 className="lead fw-normal mb-0 me-3">Sign Up</h2>
                 
               </div>
 
@@ -90,7 +94,7 @@ function Login() {
               </div>
 
              
-              <p className='text-danger'>{message}</p>
+            
               <div className="form-outline mb-4">
                 <FormControl sx={{ m: 1, width: '55ch' }} variant="outlined">
                     <InputLabel htmlFor="email">Email</InputLabel>
@@ -134,6 +138,37 @@ function Login() {
                   </FormControl>
               </div>
 
+              <div className="form-outline mb-3">
+                <FormControl sx={{ m: 1, width: '55ch' }} variant="outlined">
+                    <InputLabel htmlFor="confirm_password">Confirm Password</InputLabel>
+                    <OutlinedInput
+                      id="confirm_password"
+                      name="confirm_password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      label="Confirm Password"
+                      value={formik.values.confirm_password}
+                      onChange={formik.handleChange}
+                      error={formik.touched.confirm_password && Boolean(formik.errors.confirm_password)}
+                      helperText={formik.touched.confirm_password && formik.errors.confirm_password}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowConfirmPassword}
+                            edge="end"
+                          >
+                            {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                  {formik.touched.confirm_password && formik.errors.confirm_password && (
+                    <h4>{formik.errors.confirm_password}</h4>
+                  )}
+              </div>
+
+
               
 
               <div className="text-center text-lg-center mt-4 pt-2">
@@ -142,10 +177,10 @@ function Login() {
                   className="btn btn-primary btn-lg"
                   style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
                 >
-                  Login
+                  Register
                 </button>
                 <p className="small fw-bold mt-2 pt-1 mb-0">
-                  Don't have an account? <Link to="/sign_up"  className="link-danger">Register</Link>
+                  Already have an account? <Link to="/login"  className="link-danger">Login</Link>
                 </p>
               </div>
             </form>
@@ -158,4 +193,4 @@ function Login() {
   )
 }
 
-export default Login
+export default SignUp
