@@ -12,10 +12,11 @@ from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 class PasswordSaveView(APIView):
     def post(self, request):
+        user = request.user
         password = request.data.get('password')
         if password:
             try:
-                user = PasswordGenerator.objects.create(password=password)
+                user = PasswordGenerator.objects.create(user = user, password=password)
                 return Response("Password Saved", status=status.HTTP_200_OK)
             except Exception as e:
                 return Response({'error': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
@@ -26,7 +27,8 @@ class PasswordSaveView(APIView):
 class ListPasswordView(APIView):
     permission_classes = (IsAuthenticated, )
     def get(self, request):
-            passwords = PasswordGenerator.objects.all().order_by('-created_at')
+            user = request.user
+            passwords = PasswordGenerator.objects.filter(user = user).order_by('-created_at')
 
             serializer = PasswordGeneratorSerializer(passwords, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)

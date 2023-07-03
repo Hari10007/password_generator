@@ -96,12 +96,12 @@ SIMPLE_JWT = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # DATABASES = {
@@ -114,6 +114,18 @@ DATABASES = {
 #         'PORT': '10067',
 #     }
 # }
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': 'db.ycpazttrsvjlhuddkozl.supabase.co',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'thisisatestpassword',
+        'PORT': '5432',
+    }
+}
 
 
 # Password validation
